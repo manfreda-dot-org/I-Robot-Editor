@@ -17,6 +17,7 @@ namespace I_Robot
             {
                 components.Dispose();
             }
+            Renderer.Dispose();
             base.Dispose(disposing);
         }
 

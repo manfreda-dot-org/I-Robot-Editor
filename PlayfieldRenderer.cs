@@ -10,7 +10,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace I_Robot
 {
-    class PlayfieldRenderer
+    class PlayfieldRenderer : IDisposable
     {
         public enum PolygonType
         {
@@ -323,5 +323,9 @@ namespace I_Robot
             view.Device.RenderState.PointSpriteEnable = false;
         }
 
+        public void Dispose()
+        {
+            VertexDeclaration.Dispose();
+        }
     }
 }

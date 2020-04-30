@@ -12,7 +12,7 @@ namespace Microsoft.Xna.Framework
     // users, in a similar way to SpriteBatch. PrimitiveBatch can render lines, points,
     // and triangles to the screen. In this sample, it is used to draw a spacewars
     // retro scene.
-    public class PrimitiveBatch3D
+    public class PrimitiveBatch3D : IDisposable
     {
         public Matrix ViewMatrix
         {
@@ -37,7 +37,7 @@ namespace Microsoft.Xna.Framework
         public BasicEffect Effect;
 
         // the device that we will issue draw calls to.
-        GraphicsDevice device;
+        readonly GraphicsDevice Device;
 
 
         // the constructor creates a new XnaPrimitiveBatch and sets up all of the internals
@@ -48,7 +48,7 @@ namespace Microsoft.Xna.Framework
             {
                 throw new ArgumentNullException("graphicsDevice");
             }
-            this.device = device;
+            this.Device = device;
 
             // set up a new basic effect, and enable vertex colors.
             Effect = new BasicEffect(device, null);
@@ -78,10 +78,10 @@ namespace Microsoft.Xna.Framework
             // prepare the graphics device for drawing by setting the vertex declaration
             // and telling our basic effect to begin.
             //device.RenderState.CullMode = CullMode.CullClockwiseFace;
-            device.RenderState.CullMode = CullMode.None;
-            DepthEnabled = device.RenderState.DepthBufferEnable;
-            device.RenderState.DepthBufferEnable = true;
-            device.VertexDeclaration = declaration;
+            Device.RenderState.CullMode = CullMode.None;
+            DepthEnabled = Device.RenderState.DepthBufferEnable;
+            Device.RenderState.DepthBufferEnable = true;
+            Device.VertexDeclaration = declaration;
 
             Effect.Begin();
             Effect.CurrentTechnique.Passes[0].Begin();
@@ -95,7 +95,44 @@ namespace Microsoft.Xna.Framework
             // and then tell basic effect that we're done.
             Effect.CurrentTechnique.Passes[0].End();
             Effect.End();
-            device.RenderState.DepthBufferEnable = DepthEnabled;
+            Device.RenderState.DepthBufferEnable = DepthEnabled;
         }
+
+        #region IDisposable Support
+        private bool disposedValue = false; // To detect redundant calls
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: dispose managed state (managed objects).
+                    Effect.Dispose();
+                }
+
+                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
+                // TODO: set large fields to null.
+
+                disposedValue = true;
+            }
+        }
+
+        // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
+        // ~PrimitiveBatch3D() {
+        //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+        //   Dispose(false);
+        // }
+
+        // This code added to correctly implement the disposable pattern.
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            Dispose(true);
+            // TODO: uncomment the following line if the finalizer is overridden above.
+            // GC.SuppressFinalize(this);
+        }
+        #endregion
+
     }
 }

@@ -25,12 +25,11 @@ namespace Microsoft.Xna.Framework
 
     public partial class XnaView : UserControl, IGraphicsDeviceService
     {
-        Vector4 clearColor = new Vector4(0, 0, 0, 1);
+        Vector4 mClearColor = new Vector4(0, 0, 0, 1);
         RenderTarget2D mRenderTarget = null;
-        DepthStencilBuffer depthStencil = null;
-        PrimitiveBatch2D mPrimitiveBatch2D = null;
-        PrimitiveBatch3D mPrimitiveBatch3D = null;
-        Texture2D texture = null;
+        public DepthStencilBuffer DepthStencil { get; private set; }
+        public Texture2D Texture { get; set; }
+        public Rectangle RenderArea { get; private set; }
 
         class XnaGraphics : IServiceProvider
         {
@@ -107,15 +106,15 @@ namespace Microsoft.Xna.Framework
         XnaGraphics Graphics = null;
         public GraphicsDevice Device { get { return Graphics.Device; } }
         public DepthStencilBuffer DefaultDepthStencil { get { return Graphics.DefaultDepthStencil; } }
-        public PrimitiveBatch2D PrimitiveBatch2D { get { return mPrimitiveBatch2D; } }
-        public PrimitiveBatch3D PrimitiveBatch3D { get { return mPrimitiveBatch3D; } }
+        public PrimitiveBatch2D PrimitiveBatch2D { get; private set; }
+        public PrimitiveBatch3D PrimitiveBatch3D { get; private set; }
         public SpriteBatch SpriteBatch { get { return Graphics.SpriteBatch; } }
 
         [Category("Appearance"), Description("Clear color for the control."), Browsable(true)]
         public Vector4 ClearColor
         {
-            get { return clearColor; }
-            set { clearColor = value; if (DesignMode) Invalidate();  }
+            get { return mClearColor; }
+            set { mClearColor = value; if (DesignMode) Invalidate();  }
         }
 
         public RenderTarget2D RenderTarget
@@ -127,7 +126,7 @@ namespace Microsoft.Xna.Framework
                     int w = RenderArea.Width * 1;
                     int h = RenderArea.Height * 1;
                     mRenderTarget = new RenderTarget2D(Graphics.Device, w, h, 1, SurfaceFormat.Color);
-                    depthStencil = new DepthStencilBuffer(Graphics.Device, w, h, DepthFormat.Depth24);
+                    DepthStencil = new DepthStencilBuffer(Graphics.Device, w, h, DepthFormat.Depth24);
 
                     // Create camera and projection matrix
                     PrimitiveBatch3D.ProjectionMatrix = Microsoft.Xna.Framework.Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, (float)w/h*232/256, 1.0f, 10000.0f);
@@ -136,27 +135,13 @@ namespace Microsoft.Xna.Framework
             }
         }
 
-        public DepthStencilBuffer DepthStencil
-        {
-            get { return depthStencil; }
-        }
-
-        public Texture2D Texture
-        {
-            get { return texture; }
-            set { texture = value; }
-        }
-
-        Rectangle mRenderArea = new Rectangle(0, 0, 0, 0);
-        public Rectangle RenderArea { get { return mRenderArea; } }
-
         public XnaView()
         {
             InitializeComponent();
 
             Graphics = new XnaGraphics(this);
-            mPrimitiveBatch2D = new PrimitiveBatch2D(Graphics.Device);
-            mPrimitiveBatch3D = new PrimitiveBatch3D(Graphics.Device);
+            PrimitiveBatch2D = new PrimitiveBatch2D(Graphics.Device);
+            PrimitiveBatch3D = new PrimitiveBatch3D(Graphics.Device);
         }
 
         protected override bool IsInputKey(Keys keyData)
@@ -183,9 +168,9 @@ namespace Microsoft.Xna.Framework
             if (Texture == null)
             {
                 System.Drawing.Color c = System.Drawing.Color.FromArgb(
-                    (byte)(clearColor.X * 255),
-                    (byte)(clearColor.Y * 255),
-                    (byte)(clearColor.Z * 255));
+                    (byte)(mClearColor.X * 255),
+                    (byte)(mClearColor.Y * 255),
+                    (byte)(mClearColor.Z * 255));
                 using (System.Drawing.Brush b = new System.Drawing.SolidBrush(c))
                 {
                     e.Graphics.FillRectangle(b, ClientRectangle);
@@ -223,8 +208,7 @@ namespace Microsoft.Xna.Framework
             int h = Height;
             if (h < 1) h = 1;
             if (h > Graphics.Device.PresentationParameters.BackBufferHeight) h = Graphics.Device.PresentationParameters.BackBufferHeight;
-            mRenderArea.Width = w;
-            mRenderArea.Height = h;
+            RenderArea = new Rectangle(0, 0, w, h);
 
             mRenderTarget = null; // force render target to be re-created
         }
@@ -282,11 +266,7 @@ namespace Microsoft.Xna.Framework
         public event EventHandler DeviceDisposing;
         public event EventHandler DeviceReset;
         public event EventHandler DeviceResetting;
-
-        public GraphicsDevice GraphicsDevice
-        {
-            get { return this.Device; }
-        }
+        public GraphicsDevice GraphicsDevice => this.Device;
 
         #endregion
     }
@@ -342,6 +322,7 @@ namespace Microsoft.Xna.Framework
         {
             Device = Service.GraphicsDevice;
             Device.Reset();
+
         }
 
         void OnDeviceReset(object sender, EventArgs e)

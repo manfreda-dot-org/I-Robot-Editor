@@ -17,6 +17,9 @@ namespace Microsoft.Xna.Framework
             {
                 components.Dispose();
             }
+            mRenderTarget.Dispose();
+            PrimitiveBatch2D.Dispose();
+            DepthStencil.Dispose();
             base.Dispose(disposing);
         }
 
