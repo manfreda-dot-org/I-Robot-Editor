@@ -11,3 +11,6 @@ Editor uses original game ROM binaries, which must be provided by the user.
     136029-206.bin
 
 The files can be dropped into the same directory as the editor.
+
+User can pan and rotate using the WASD and arrow keys
+Mouse can be used to pan/zoom/rotate the imgage
