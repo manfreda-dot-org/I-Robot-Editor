@@ -56,33 +56,34 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Form1.cs">
+    <Compile Include="Forms\Form1.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
+    <Compile Include="Forms\Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="GameStructures\Level.cs" />
     <Compile Include="Log.cs" />
-    <Compile Include="Mathbox.Memory.cs" />
-    <Compile Include="Mathbox.Mesh.cs" />
-    <Compile Include="Mesh viewer.cs">
+    <Compile Include="Mathbox\Memory.cs" />
+    <Compile Include="Mathbox\Mesh.cs" />
+    <Compile Include="Forms\Mesh viewer.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Mesh viewer.Designer.cs">
+    <Compile Include="Forms\Mesh viewer.Designer.cs">
       <DependentUpon>Mesh viewer.cs</DependentUpon>
     </Compile>
     <Compile Include="PlayfieldRenderer.cs" />
     <Compile Include="Palette.cs" />
-    <Compile Include="Playfield.cs" />
+    <Compile Include="GameStructures\Playfield.cs" />
     <Compile Include="PrimitiveBatch2D.cs" />
     <Compile Include="PrimitiveBatch3D.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Form1.resx">
+    <EmbeddedResource Include="Forms\Form1.resx">
       <SubType>Designer</SubType>
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Mesh viewer.resx">
+    <EmbeddedResource Include="Forms\Mesh viewer.resx">
       <DependentUpon>Mesh viewer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">

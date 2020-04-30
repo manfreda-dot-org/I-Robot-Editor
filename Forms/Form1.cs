@@ -20,8 +20,8 @@ namespace I_Robot
         PlayfieldRenderer Renderer = new PlayfieldRenderer();
         Matrix Matrix; // world matrix
 
-        LevelCollection Levels;
-        LevelInfo mSelectedLevel;
+        GameStructures.LevelCollection Levels;
+        GameStructures.Level mSelectedLevel;
         Mathbox.Mesh Robot;
 
         public Form1()
@@ -36,9 +36,9 @@ namespace I_Robot
 
             Robot = Mathbox.Mesh.GetMeshAt(0x2958);
 
-            Levels = new LevelCollection();
+            Levels = new GameStructures.LevelCollection();
 
-            foreach (LevelInfo level in Levels)
+            foreach (GameStructures.Level level in Levels)
                     listBox1.Items.Add(level.Name);
 
             SelectedLevel = Levels[0];
@@ -47,7 +47,7 @@ namespace I_Robot
         }
 
 
-        LevelInfo SelectedLevel
+        GameStructures.Level SelectedLevel
         {
             get { return mSelectedLevel; }
             set
@@ -58,9 +58,10 @@ namespace I_Robot
 #if DEBUG
                     value.Print();
 #endif
+                    Palette.SetColorGroup((value.LevelNum - 1) / 26);
 
                     // reset world matrix
-                    float scale = 1.0f / Tile.SIZE;
+                    float scale = 1.0f / GameStructures.Playfield.Tile.SIZE;
                     Matrix = Matrix.CreateTranslation(new Vector3(-128 / 2 - value.PlayfieldInfo.Dimensions.Width / 2, 400, -128 / 2 - value.PlayfieldInfo.Dimensions.Height / 2));
                     Matrix = Matrix * Matrix.CreateScale(scale, scale * 232 / 256, scale);
 
@@ -93,7 +94,7 @@ namespace I_Robot
             if (SelectedLevel == null)
                 return;
 
-            Palette.Cycle();
+            Palette.CycleColors();
 
             // create object matrix
             XnaView1.PrimitiveBatch3D.ViewMatrix = Microsoft.Xna.Framework.Matrix.CreateLookAt(Vector3.Forward * 3, Vector3.Zero, Vector3.Down);
@@ -105,7 +106,7 @@ namespace I_Robot
             Renderer.RenderPlayfield(XnaView1, SelectedLevel);
 
             float rows = SelectedLevel.PlayfieldInfo.Chunks[0].Count + 0.5f;
-            XnaView1.PrimitiveBatch3D.WorldMatrix = Matrix.CreateFromYawPitchRoll(MathHelper.PiOver2,0,0) * Matrix.CreateTranslation(new Vector3(Tile.SIZE * 8.5f, 0, Tile.SIZE * rows)) * XnaView1.PrimitiveBatch3D.WorldMatrix;
+            XnaView1.PrimitiveBatch3D.WorldMatrix = Matrix.CreateFromYawPitchRoll(MathHelper.PiOver2,0,0) * Matrix.CreateTranslation(new Vector3(GameStructures.Playfield.Tile.SIZE * 8.5f, 0, GameStructures.Playfield.Tile.SIZE * rows)) * XnaView1.PrimitiveBatch3D.WorldMatrix;
             Robot.Render(XnaView1);
 
             XnaView1.EndRender();

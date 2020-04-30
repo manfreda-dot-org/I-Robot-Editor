@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using I_Robot.GameStructures;
+using I_Robot.GameStructures.Playfield;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -195,7 +197,7 @@ namespace I_Robot
             return 36;
         }
 
-        void AddSlopedTile(PlayfieldChunkList chunks, int row, int col, int color_index)
+        void AddSlopedTile(ChunkList chunks, int row, int col, int color_index)
         {
             float x2 = V.X + Tile.SIZE;
             float z2 = V.Z + Tile.SIZE;
@@ -251,7 +253,7 @@ namespace I_Robot
             }
         }
 
-        void AddTileIndices(PlayfieldChunkList chunks, int row, int col)
+        void AddTileIndices(ChunkList chunks, int row, int col)
         {
             Tile tile = chunks.GetTileAt(row, col);
 
@@ -279,7 +281,7 @@ namespace I_Robot
             AddFlatTile(tile.Height, color);
         }
 
-        public void RenderChunkList(PlayfieldChunkList chunks)
+        public void RenderChunkList(ChunkList chunks)
         {
             int num_rows = chunks.NumRows;// + level.BonusPyramid?.NumRows ?? 0;
             int num_cols = chunks.NumColumns;
@@ -292,7 +294,7 @@ namespace I_Robot
             }
         }
 
-        public void RenderPlayfield(XnaView view, LevelInfo level)
+        public void RenderPlayfield(XnaView view, Level level)
         {
             if (VertexDeclaration?.GraphicsDevice != view.Device)
                 VertexDeclaration = new VertexDeclaration(view.Device, VertexPositionColor.VertexElements);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,20 +9,31 @@ namespace I_Robot
 {
     static public class Palette
     {
-        static public System.Drawing.Color[] RegularColor = new System.Drawing.Color[64];
-        static public Microsoft.Xna.Framework.Graphics.Color[] XnaColor = new Microsoft.Xna.Framework.Graphics.Color[64];
-        static Random Random = new Random();
+        static readonly Color W = Color.White;
+        static readonly Color R = Color.Red;
+        static readonly Color O = Color.Orange;
+        static readonly Color Y = Color.Yellow;
+        static readonly Color G = Color.Lime;
+        static readonly Color C = Color.Cyan;
+        static readonly Color B = Color.Blue;
+        static readonly Color P = Color.Purple;
+
+        static readonly List<Color[]> ColorGroup = new List<Color[]>();
+        static public readonly System.Drawing.Color[] RegularColor = new System.Drawing.Color[64];
+        static public readonly Microsoft.Xna.Framework.Graphics.Color[] XnaColor = new Microsoft.Xna.Framework.Graphics.Color[64];
+        static readonly Random Random = new Random();
 
         static Palette()
         {
-            Add8Colors(System.Drawing.Color.White, 8 * 0);
-            Add8Colors(System.Drawing.Color.Red, 8 * 1);
-            Add8Colors(System.Drawing.Color.Orange, 8 * 2);
-            Add8Colors(System.Drawing.Color.Yellow, 8 * 3);
-            Add8Colors(System.Drawing.Color.Lime, 8 * 4);
-            Add8Colors(System.Drawing.Color.Cyan, 8 * 5);
-            Add8Colors(System.Drawing.Color.Blue, 8 * 6);
-            Add8Colors(System.Drawing.Color.Purple, 8 * 7);
+            // default I Robot palettes
+            ColorGroup.Add(new System.Drawing.Color[8] { W, R, O, Y, G, C, B, P });
+            ColorGroup.Add(new System.Drawing.Color[8] { P, Y, B, W, C, R, G, O });
+            ColorGroup.Add(new System.Drawing.Color[8] { R, B, Y, C, P, O, W, G });
+            ColorGroup.Add(new System.Drawing.Color[8] { Y, P, G, W, C, R, O, B });
+            ColorGroup.Add(new System.Drawing.Color[8] { R, Y, W, C, B, G, O, P });
+            ColorGroup.Add(new System.Drawing.Color[8] { G, B, P, O, R, Y, C, W });
+
+            SetColorGroup(0);
         }
 
         static void Add8Colors(System.Drawing.Color color, int index)
@@ -37,7 +49,15 @@ namespace I_Robot
             }
         }
 
-        static public void Cycle()
+        static public void SetColorGroup(int group)
+        {
+            Color[] c = ColorGroup[group];
+
+            for (int n=0; n<8; n++)
+                Add8Colors(c[n], 8 * n);
+        }
+
+        static public void CycleColors()
         {
             for (int n = 56; n <= 58; n++)
             {
