@@ -11,11 +11,12 @@ namespace I_Robot.GameStructures
     /// <summary>
     /// Represents a game level, as stored in ROM 136029-206
     /// </summary>
-    public class Level : Rom206Reference
+    public class Level : Rom206Object
     {
         public readonly string Name;
         public readonly int LevelNum;
-        public readonly Playfield.PlayfieldInfo PlayfieldInfo;
+
+        public readonly Playfield.Info PlayfieldInfo;
         public readonly int DefaultBonusTimerSec;
         public readonly byte LevelFlags;
         public readonly int DefaultBestTimeSec;
@@ -24,21 +25,23 @@ namespace I_Robot.GameStructures
         /// Pointer to the bonus pyramid associated with this level
         /// Set to null if there is no bonus pyramid for this level
         /// </summary>
-        public readonly Playfield.BonusPyramidInfo BonusPyramid;
+        public readonly BonusPyramid.Info BonusPyramid;
 
         public Level(string name, int level_num, Rom206 rom, int address, int? force_playfield_info = null) : base(rom, address)
         {
             Name = name;
             LevelNum = level_num;
-            PlayfieldInfo = new Playfield.PlayfieldInfo(this, force_playfield_info ?? Rom206.PLAYFIELD_INFO_ADDRESS + Byte(0));
-            DefaultBonusTimerSec = Byte(1);
-            LevelFlags = Byte(4);
-            DefaultBestTimeSec = Byte(14);
+            PlayfieldInfo = new Playfield.Info(this, force_playfield_info ?? Rom206.PLAYFIELD_INFO_ADDRESS + this[0]);
+            DefaultBonusTimerSec = this[1];
+            LevelFlags = this[4];
+            DefaultBestTimeSec = this[14];
 
             // read the BonusPyramidInfo pointer from the table in ROM
             int pyramid_addr = Rom.Word(Rom206.BONUS_PYRAMID_TABLE_ADDRESS + (level_num - 1) * 2);
-            BonusPyramid = (pyramid_addr > 0) ? new Playfield.BonusPyramidInfo(this, pyramid_addr) : null;
+            BonusPyramid = (pyramid_addr > 0) ? new BonusPyramid.Info(this, pyramid_addr) : null;
         }
+
+        public override int Size => 15;
 
         public void Print()
         {

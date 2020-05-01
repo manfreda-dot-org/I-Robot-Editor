@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +8,53 @@ using I_Robot.GameStructures.Playfield;
 
 namespace I_Robot.Roms
 {
-    public class ROM
+    /// <summary>
+    /// interface for a byte addressable ROM
+    /// </summary>
+    public interface IRom8
+    {
+        int Size { get; }
+
+        byte this[int index] { get; }
+    }
+
+    public static class RomExtensions
+    {
+        public static UInt16 Word(this IRom8 rom, int index)
+        {
+            return (UInt16)((rom[index] << 8) + rom[index + 1]);
+        }
+    }
+
+
+    public class GameRom : IRom8
+    {
+        readonly byte[] Memory = new byte[0x10000];
+
+        private GameRom(ROM r405, ROM r206, ROM r207, ROM r208, ROM r209, ROM r210)
+        {
+            // TBD
+        }
+
+        public byte this[int index] => Memory[index];
+
+        public int Size => Memory.Length;
+
+        static public bool TryCreate(out GameRom rom)
+        {
+            rom = null;
+            if (!ROM.TryLoad("136029-405.bin", 0x4000, 0x150A97, out ROM r405)) return false;
+            if (!ROM.TryLoad("136029-206.bin", 0x4000, 0x174942, out ROM r206)) return false;
+            if (!ROM.TryLoad("136029-207.bin", 0x4000, 0x17384C, out ROM r207)) return false;
+            if (!ROM.TryLoad("136029-208.bin", 0x2000, 0x0D5E26, out ROM r208)) return false;
+            if (!ROM.TryLoad("136029-209.bin", 0x4000, 0x1A1B59, out ROM r209)) return false;
+            if (!ROM.TryLoad("136029-210.bin", 0x4000, 0x179092, out ROM r210)) return false;
+            rom = new GameRom(r405, r206, r207, r208, r209, r210);
+            return true;
+        }
+    }
+
+    public class ROM : IRom8
     {
         public readonly String Filename;
         public readonly UInt32 Checksum;
@@ -23,6 +70,8 @@ namespace I_Robot.Roms
             // calculate checksum
             for (int n = 0; n < Data.Length; n++)
                 Checksum += Data[n];
+
+            System.Diagnostics.Debug.WriteLine($"ROM {filename} loaded, checksum = {ChecksumString(Checksum)}");
         }
 
         public byte this[int index]
@@ -47,7 +96,7 @@ namespace I_Robot.Roms
             }
             catch
             {
-                Log.LogMessage("Failed to load ROM file \"" + filename + "\".");
+                Log.LogMessage($"Failed to load ROM file: {filename}");
                 rom = null;
                 return false;
             }
@@ -59,7 +108,7 @@ namespace I_Robot.Roms
             {
                 if (rom.Size != size)
                 {
-                    System.Diagnostics.Debug.WriteLine("ROM \"" + filename + "\" has incorrect size (expected = " + size.ToString() + " bytes, actual = " + rom.Size.ToString() + " bytes)");
+                    Log.LogMessage($"ROM {filename} has incorrect size: expected = {size} bytes, actual = {rom.Size} bytes");
                     rom = null;
                 }
             }
@@ -73,7 +122,7 @@ namespace I_Robot.Roms
             {
                 if (rom.Checksum != checksum)
                 {
-                    System.Diagnostics.Debug.WriteLine("ROM \"" + filename + "\" has incorrect checksum. (expected = " + ChecksumString(checksum) + ", actual = " + ChecksumString(rom.Checksum) + ")");
+                    Log.LogMessage($"ROM {filename} has incorrect checksum: expected = {ChecksumString(checksum)}, actual = {ChecksumString(rom.Checksum)}");
                     rom = null;
                 }
             }
@@ -84,7 +133,7 @@ namespace I_Robot.Roms
     /// <summary>
     /// Represents an instance of the I,Robot game rom 136029.206
     /// </summary>
-    public class Rom206
+    public class Rom206 : IRom8
     {
         /// <summary>
         /// This is the base address of level pointer table
@@ -130,7 +179,7 @@ namespace I_Robot.Roms
 
         byte[] Data = new byte[0x2000];
         Tile[] Tile = new Tile[64];
-        Row[] Row = new Row[251];
+        TileRow[] Row = new TileRow[251];
         public Dictionary<UInt16, Chunk> Chunks = new Dictionary<ushort, Chunk>();
         public Dictionary<UInt16, ChunkList> ChunkList = new Dictionary<ushort, ChunkList>();
 
@@ -139,8 +188,10 @@ namespace I_Robot.Roms
         /// </summary>
         private Rom206()
         {
+            GameRom.TryCreate(out GameRom r);
+
             // load the ROM
-            ROM.TryLoad("136029-206.bin", out ROM rom);
+            ROM.TryLoad("136029-206.bin", 0x4000, 0x174942, out ROM rom);
             System.Diagnostics.Debug.Assert(rom.Data.Length == 0x4000);
             Array.Copy(rom.Data, 0x2000, Data, 0, Data.Length);
 
@@ -150,8 +201,10 @@ namespace I_Robot.Roms
 
             // read all the rows
             for (int n = 0; n < Row.Length; n++)
-                Row[n] = new Row(this, n + 1);
+                Row[n] = new TileRow(this, n + 1);
         }
+
+        public int Size => Data.Length;
 
         /// <summary>
         /// Attempts to load the 136029-206.bin ROM
@@ -179,7 +232,7 @@ namespace I_Robot.Roms
             return Tile[offset / 2 + 8];
         }
 
-        public Row GetRowAt(int index)
+        public TileRow GetRowAt(int index)
         {
             return Row[index - 1];
         }
@@ -205,36 +258,25 @@ namespace I_Robot.Roms
                 return Data[index - 0x4000];
             }
         }
-
-        public UInt16 Word(int index)
-        {
-            return (UInt16)((this[index] << 8) + this[index + 1]);
-        }
     }
 
     /// <summary>
     /// Represents a generic object/structure inside a Rom
     /// </summary>
-    public class Rom206Reference
+    public abstract class Rom206Object : IRom8
     {
         public readonly Rom206 Rom;
         public readonly UInt16 Address;
 
-        public Rom206Reference(Rom206 rom, int address)
+        public Rom206Object(Rom206 rom, int address)
         {
             Rom = rom;
             Address = (UInt16)address;
         }
 
-        protected byte Byte(int index)
-        {
-            return Rom[Address + index];
-        }
+        public byte this[int index] => Rom[Address + index];
 
-        protected UInt16 Word(int index)
-        {
-            return (UInt16)((Byte(index) << 8) + Byte(index + 1));
-        }
+        abstract public int Size { get; }
     }
 
 }

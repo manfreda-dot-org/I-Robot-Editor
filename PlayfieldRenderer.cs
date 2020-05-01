@@ -206,7 +206,7 @@ namespace I_Robot
 
             int y12 = y11;
             int y22 = y21;
-            if (col < Row.NUM_COLUMNS - 1)
+            if (col < TileRow.NUM_COLUMNS - 1)
             {
                 y12 = chunks.GetTileAt(row, col + 1).Height;
                 y22 = chunks.GetTileAt(row + 1, col + 1).Height;

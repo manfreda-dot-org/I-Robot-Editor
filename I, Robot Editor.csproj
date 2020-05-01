@@ -100,6 +100,7 @@
     <Compile Include="Forms\Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="GameStructures\BonusPyramid.cs" />
     <Compile Include="GameStructures\Level.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="Mathbox\Memory.cs" />
