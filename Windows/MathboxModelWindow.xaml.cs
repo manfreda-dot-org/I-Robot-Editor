@@ -28,7 +28,7 @@ namespace I_Robot
         readonly MatrixTransform3D WorldMatrix = new MatrixTransform3D();
         readonly TranslateTransform3D Translate = new TranslateTransform3D();
 
-        Mathbox.Model3D mSelectedModel = null;
+        MathboxModel3D mSelectedModel = null;
         Point Mouse;
 
         public MathboxModelWindow()
@@ -39,11 +39,11 @@ namespace I_Robot
             ModelTransformGroup.Children.Add(WorldMatrix);
             ModelTransformGroup.Children.Add(ModelScale);
 
-            foreach (var model in Mathbox.Model3D.ModelList)
+            foreach (var model in Mathbox.Mesh.MeshList)
                 lbModels.Items.Add(model);
         }
 
-        public Mathbox.Model3D SelectedModel
+        public MathboxModel3D SelectedModel
         {
             get { return mSelectedModel; }
             set
@@ -69,18 +69,15 @@ namespace I_Robot
 
         private void lbModels_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            SelectedModel = lbModels.SelectedItem as Mathbox.Model3D;
+            if (MathboxModel3D.TryGetModel(lbModels.SelectedItem as Mathbox.Mesh, out var model))
+                SelectedModel = model;
         }
 
         private void Window_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-            //            mCamera.Position = new System.Windows.Media.Media3D.Point3D(
-            //                mCamera.Position.X,
-            //                mCamera.Position.Y,
-            //                mCamera.Position.Z + e.Delta / 250D);
-
+            double scale = 1 + e.Delta / 500D;
             Matrix3D m = WorldMatrix.Matrix;
-            m.Translate(new Vector3D(0, 0, -2 * e.Delta));
+            m.Scale(new Vector3D(scale, scale, scale));
             WorldMatrix.Matrix = m;
         }
 

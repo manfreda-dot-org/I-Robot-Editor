@@ -58,11 +58,12 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Log.cs" />
-    <Compile Include="ModelBuilder.cs" />
+    <Compile Include="Models\MathboxModel3D.cs" />
+    <Compile Include="Models\ModelBuilder.cs" />
     <Compile Include="Palette.cs" />
-    <Compile Include="PlayfieldModel3D.cs" />
+    <Compile Include="Models\PlayfieldModel3D.cs" />
     <Compile Include="ROM.cs" />
-    <Compile Include="Starfield.cs" />
+    <Compile Include="Models\StarfieldModel3D.cs" />
     <Compile Include="Windows\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
@@ -87,7 +88,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Mathbox\Memory.cs" />
-    <Compile Include="Mathbox\Model.cs" />
+    <Compile Include="Mathbox\Mesh.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

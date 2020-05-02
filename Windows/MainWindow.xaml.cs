@@ -42,7 +42,7 @@ namespace I_Robot
             ModelTransformGroup.Children.Add(WorldMatrix);
             ModelTransformGroup.Children.Add(ModelScale);
 
-            ModelVisual3D starfield = new Starfield();
+            ModelVisual3D starfield = new StarfieldModel3D();
             starfield.Transform = RotMatrix;
             Viewport.Children.Add(starfield);
 
@@ -167,7 +167,10 @@ namespace I_Robot
         {
             MathboxModelWindow window = new MathboxModelWindow();
             window.Owner = this;
-            window.SelectedModel = Mathbox.Model3D.GetModelAt(0x3578);
+
+            if (MathboxModel3D.TryGetModel(Mathbox.Mesh.BIG_BROTHER_MOUTH_CLOSED, out var model))
+                window.SelectedModel = model;
+
             window.Show();
         }
     }

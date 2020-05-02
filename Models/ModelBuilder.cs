@@ -44,7 +44,7 @@ namespace I_Robot
                 //                geometry.Positions.Add(new Point3D(p.X / length, p.Y / length, p.Z / length));
                 geometry.Positions.Add(new Point3D(normal.X, normal.Y, normal.Z));
 //                normal.Normalize();
-                geometry.Normals.Add(normal);
+                geometry.Normals.Add(-normal);
                 return index++;
             }
 
@@ -385,6 +385,126 @@ namespace I_Robot
 
             GeometryModel3D model = new GeometryModel3D(DotMesh, material);
             model.Transform = transform;
+            Group.Children.Add(model);
+        }
+
+        protected void AddCylinder(Point3D point1, Point3D point2, double diameter, int num_sides, Material material)
+        {
+            double radius = diameter / 2;
+
+            Vector3D axis = Point3D.Subtract(point2, point1);
+            MeshGeometry3D mesh = new MeshGeometry3D();
+
+            // Get two vectors perpendicular to the axis.
+            Vector3D v1;
+            if ((axis.Z < -0.01) || (axis.Z > 0.01))
+                v1 = new Vector3D(axis.Z, axis.Z, -axis.X - axis.Y);
+            else
+                v1 = new Vector3D(-axis.Y - axis.Z, axis.X, axis.X);
+            v1.Normalize();
+            Vector3D v2 = Vector3D.CrossProduct(v1, axis); v2.Normalize();
+            Vector3D axis_norm = axis; axis_norm.Normalize();
+
+            // Make the vectors have length radius.
+            v1 *= radius;
+            v2 *= radius;
+            Vector3D v3 = axis_norm * radius;
+
+            Vector3D[] normals = new Vector3D[num_sides];
+            Vector3D[] radials = new Vector3D[num_sides];
+            for (int i = 0; i < num_sides; i++)
+            {
+                double theta = i * (2 * Math.PI / num_sides);
+                Vector3D v = Math.Cos(theta) * v1 + Math.Sin(theta) * v2;
+                radials[i] = v;
+                v.Normalize();
+                normals[i] = -v;
+            }
+
+            // Make the top end cap.
+            // Make the end point.
+            int pt0 = 0; // index of first point
+            mesh.Positions.Add(point1 - v3);
+            mesh.Normals.Add(axis_norm);
+
+            // Make the top points.
+            for (int i = 0; i < num_sides; i++)
+            {
+                mesh.Positions.Add(point1 + radials[i]);
+                mesh.Normals.Add(normals[i]);
+            }
+
+            // Make the top triangles.
+            int pt1 = mesh.Positions.Count - 1; // Index of last point.
+            int pt2 = pt0 + 1;                  // Index of first point.
+            for (int i = 0; i < num_sides; i++)
+            {
+                mesh.TriangleIndices.Add(pt0);
+                mesh.TriangleIndices.Add(pt1);
+                mesh.TriangleIndices.Add(pt2);
+                pt1 = pt2++;
+            }
+
+            // Make the bottom end cap.
+            // Make the end point.
+            pt0 = mesh.Positions.Count; // Index of end_point2.
+            mesh.Positions.Add(point2 + v3);
+            mesh.Normals.Add(-axis_norm);
+
+            // Make the bottom points.
+            for (int i = 0; i < num_sides; i++)
+            {
+                mesh.Positions.Add(point2 + radials[i]);
+                mesh.Normals.Add(normals[i]);
+            }
+
+            // Make the bottom triangles.
+            pt1 = mesh.Positions.Count - 1; // Index of last point.
+            pt2 = pt0 + 1;                  // Index of first point.
+            for (int i = 0; i < num_sides; i++)
+            {
+                mesh.TriangleIndices.Add(num_sides + 1);    // end_point2
+                mesh.TriangleIndices.Add(pt2);
+                mesh.TriangleIndices.Add(pt1);
+                pt1 = pt2++;
+            }
+
+            // Make the sides.
+            // Add the points to the mesh.
+            int first_side_point = mesh.Positions.Count;
+            for (int i = 0; i < num_sides; i++)
+            {
+                Point3D p1 = point1 + radials[i];
+                mesh.Positions.Add(p1);
+                mesh.Normals.Add(normals[i]);
+                Point3D p2 = p1 + axis;
+                mesh.Positions.Add(p2);
+                mesh.Normals.Add(normals[i]);
+            }
+
+            // Make the side triangles.
+            pt1 = mesh.Positions.Count - 2;
+            pt2 = pt1 + 1;
+            int pt3 = first_side_point;
+            int pt4 = pt3 + 1;
+            for (int i = 0; i < num_sides; i++)
+            {
+                mesh.TriangleIndices.Add(pt1);
+                mesh.TriangleIndices.Add(pt2);
+                mesh.TriangleIndices.Add(pt4);
+
+                mesh.TriangleIndices.Add(pt1);
+                mesh.TriangleIndices.Add(pt4);
+                mesh.TriangleIndices.Add(pt3);
+
+                pt1 = pt3;
+                pt3 += 2;
+                pt2 = pt4;
+                pt4 += 2;
+            }
+
+            GeometryModel3D model = new GeometryModel3D(mesh, material);
+            //            model.BackMaterial = material;
             Group.Children.Add(model);
         }
     }

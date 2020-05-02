@@ -8,9 +8,9 @@ using System.Windows.Media.Media3D;
 
 namespace I_Robot
 {
-    class Starfield : ModelBuilder
+    class StarfieldModel3D : ModelBuilder
     {
-        public Starfield()
+        public StarfieldModel3D()
         {
             Material m = new EmissiveMaterial(new SolidColorBrush(Colors.White));
             Random r = new Random();
