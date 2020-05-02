@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using I_Robot.Roms;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace I_Robot.GameStructures.Playfield
 {
@@ -287,11 +285,13 @@ namespace I_Robot.GameStructures.Playfield
             }
         }
 
-        public System.Drawing.Size Dimensions
+        public System.Windows.Size Dimensions
         {
             get
             {
-                return new System.Drawing.Size(NumColumns * Tile.SIZE, NumRows * Tile.SIZE);
+
+
+                return new System.Windows.Size(NumColumns * Tile.SIZE, NumRows * Tile.SIZE);
             }
         }
 
@@ -336,7 +336,7 @@ namespace I_Robot.GameStructures.Playfield
 
         public int NumRows => Chunks.NumRows;
         public int NumColumns => Chunks.NumColumns;
-        public System.Drawing.Size Dimensions => Chunks.Dimensions;
+        public System.Windows.Size Dimensions => Chunks.Dimensions;
 
         public void Print()
         {

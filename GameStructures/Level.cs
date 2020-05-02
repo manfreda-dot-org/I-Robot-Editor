@@ -52,6 +52,11 @@ namespace I_Robot.GameStructures
             BonusPyramid?.Print();
             PlayfieldInfo.Print();
         }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 
     public class LevelCollection : IReadOnlyList<Level>

@@ -27,7 +27,7 @@ namespace I_Robot.GameStructures.BonusPyramid
         /// <summary>
         /// The dimensions of the pyramid, in world units
         /// </summary>
-        public System.Drawing.Size Dimensions => Chunks.Dimensions;
+        public System.Windows.Size Dimensions => Chunks.Dimensions;
 
         public override int Size => 4;
 

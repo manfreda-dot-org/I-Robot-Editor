@@ -108,6 +108,15 @@ namespace I_Robot.Mathbox
             }
         }
 
+        public bool TryRead(int index, out UInt16 value)
+        {
+            value = 0;
+            if (index < 0x2000 || index >= 0x8000)
+                return false;
+            value = this[index];
+            return true;
+        }
+
         public UInt16 this[int index]
         {
             get { return Data[index]; }

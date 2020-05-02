@@ -9,7 +9,7 @@ namespace I_Robot
         static public void LogMessage(string s)
         {
             System.Diagnostics.Debug.WriteLine(s);
-            System.Windows.Forms.MessageBox.Show(s, "Message");
+            //System.Windows.Forms.MessageBox.Show(s, "Message");
         }
         
     }
