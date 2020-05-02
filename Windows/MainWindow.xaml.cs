@@ -30,37 +30,46 @@ namespace I_Robot
         Point Mouse;
 
         const double MODEL_SCALE = 1.0 / 16 / GameStructures.Playfield.Tile.SIZE;
-        readonly Transform3DGroup ModelTransformGroup = new Transform3DGroup();
         readonly ScaleTransform3D ModelScale = new ScaleTransform3D(MODEL_SCALE, MODEL_SCALE * 232 / 256, MODEL_SCALE);
         readonly MatrixTransform3D WorldMatrix = new MatrixTransform3D();
-        readonly MatrixTransform3D RotMatrix = new MatrixTransform3D();
+        readonly MatrixTransform3D StarfieldRotMatrix = new MatrixTransform3D();
 
         public MainWindow()
         {
             InitializeComponent();
 
-            ModelTransformGroup.Children.Add(WorldMatrix);
-            ModelTransformGroup.Children.Add(ModelScale);
-
+            // add the starfield to the background
             ModelVisual3D starfield = new StarfieldModel3D();
-            starfield.Transform = RotMatrix;
+            starfield.Transform = StarfieldRotMatrix;
             Viewport.Children.Add(starfield);
 
+            // add standard light sources
             Viewport.Children.Add(new ModelVisual3D() { Content = AmbientLight });
             Viewport.Children.Add(new ModelVisual3D() { Content = DirectionalLight });
 
-            //ModelVisual3D big_bro = Mathbox.Model3D.GetModelAt(0x3578);
-            //big_bro.Transform = ModelTransformGroup;
-            //Viewport.Children.Add(big_bro);
-
+            // add the playfield model
             ModelVisual3D playfield = PlayfieldModel;
-            playfield.Transform = ModelTransformGroup;
+            Transform3DGroup xform_group = new Transform3DGroup();
+            xform_group.Children.Add(WorldMatrix);
+            xform_group.Children.Add(ModelScale);
+            playfield.Transform = xform_group;
             Viewport.Children.Add(playfield);
 
+            // throw in big brother
+            if (MathboxModel3D.TryGetModel(Mathbox.Mesh.BIG_BROTHER_MOUTH_CLOSED, out var big_bro))
+            {
+                ModelVisual3D b = new ModelVisual3D();
+                b.Content = big_bro;
+                b.Transform = xform_group;
+                Viewport.Children.Add(b);
+            }
+
+            // populate the list view with available levels
             foreach (var level in Levels)
                 lbLevels.Items.Add(level);
             lbLevels.SelectedIndex = 0;
 
+            // start our timer
             DispatcherTimer timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(0.05);
             timer.Tick += timer_Tick;
@@ -85,7 +94,6 @@ namespace I_Robot
                 if (value != null && PlayfieldModel.Level != value)
                 {
                     PlayfieldModel.Level = value;
-                    //PlayfieldModel.Transform = ModelTransformGroup;
 
                     // reset model rotation matrix
                     Matrix3D m = Matrix3D.Identity;
@@ -137,16 +145,24 @@ namespace I_Robot
                     double scale = Math.PI / 5;
 
                     Matrix3D m = WorldMatrix.Matrix;
+
+                    Vector3D v = new Vector3D(0, 0, -2000);
+                    m.Translate(v);
+
+
                     m.Rotate(new Quaternion(new Vector3D(1, 0, 0), p*scale));
                     m.Rotate(new Quaternion(new Vector3D(0, 1, 0) * m, y*scale));
                     //m.Rotate(new Quaternion(new Vector3D(0, 0, 1) * m, z));
+
+                    m.Translate(-v);
+
                     WorldMatrix.Matrix = m;
 
-                    m = RotMatrix.Matrix;
+                    m = StarfieldRotMatrix.Matrix;
                     m.Rotate(new Quaternion(new Vector3D(1, 0, 0), p * scale));
                     m.Rotate(new Quaternion(new Vector3D(0, 1, 0) * m, y * scale));
                     //m.Rotate(new Quaternion(new Vector3D(0, 0, 1) * m, z));
-                    RotMatrix.Matrix = m;
+                    StarfieldRotMatrix.Matrix = m;
                 }
                 if (e.RightButton == MouseButtonState.Pressed)
                 {

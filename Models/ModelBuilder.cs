@@ -39,11 +39,7 @@ namespace I_Robot
             {
                 Vector3D normal = new Vector3D(p.X, p.Y, p.Z);
                 normal.Normalize();
-
-                //                double length = Math.Sqrt(p.X * p.X + p.Y * p.Y + p.Z * p.Z);
-                //                geometry.Positions.Add(new Point3D(p.X / length, p.Y / length, p.Z / length));
                 geometry.Positions.Add(new Point3D(normal.X, normal.Y, normal.Z));
-//                normal.Normalize();
                 geometry.Normals.Add(-normal);
                 return index++;
             }
