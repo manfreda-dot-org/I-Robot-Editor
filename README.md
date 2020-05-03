@@ -1,5 +1,5 @@
 I Robot Editor
-![image](https://user-images.githubusercontent.com/64547232/80893736-020a2a80-8ca3-11ea-80dd-988316184f2e.png)
+![image](https://user-images.githubusercontent.com/64547232/80896846-b9fa0080-8cc0-11ea-9278-68b65f1df2ec.png)
 
 Allows for viewing (and eventual editing) of game levels in the 1983 Atari coin-op game I, Robot.
 
