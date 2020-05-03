@@ -154,6 +154,60 @@ namespace I_Robot.GameStructures.Playfield
             get { return (TYPE)(this[1] & 0xF); }
         }
 
+        public bool IsSloped
+        {
+            get
+            {
+                switch (Type)
+                {
+                    case TYPE.BLUE_SLOPE_8:
+                    case TYPE.RED_SLOPE_13: return true;
+                }
+                return false;
+            }
+        }
+
+        public bool IsVisible
+        {
+            get
+            {
+                switch (Type)
+                {
+                    case TYPE.EMPTY_0:
+                    case TYPE.BLACK_6:
+                    case TYPE.ILLEGAL_15: return false;
+                }
+                return true;
+            }
+        }
+
+        public byte ColorIndex
+        {
+            get
+            {
+                switch (Type)
+                {
+                    case Tile.TYPE.EMPTY_0: return 0;
+                    case Tile.TYPE.BLUE_1: return 0x37;
+                    case Tile.TYPE.BLUE_JEWEL_2: return 0x37;
+                    case Tile.TYPE.UP_DOWN_3: return 0x17;
+                    case Tile.TYPE.BRIDGE_4: return 0x39;
+                    case Tile.TYPE.RED_5: return 0x0F;
+                    case Tile.TYPE.BLACK_6: return 0;
+                    case Tile.TYPE.KILL_EYE_7: return 0x0F; 
+                    case Tile.TYPE.BLUE_SLOPE_8: return 0x30;
+                    case Tile.TYPE.DESTRUCTABLE_9: return 0x34; 
+                    case Tile.TYPE.GREEN_10: return 0x25; 
+                    case Tile.TYPE.BLUE_11: return 0x37; 
+                    case Tile.TYPE.BLUE_12: return 0x37; 
+                    case Tile.TYPE.RED_SLOPE_13: return 0x8;
+                    case Tile.TYPE.YELLOW_14: return 0x1F; 
+                    case Tile.TYPE.ILLEGAL_15: return 0;
+                }
+                return 0;
+            }
+        }
+
         public override string ToString()
         {
             if (Type == TYPE.EMPTY_0)
@@ -289,8 +343,6 @@ namespace I_Robot.GameStructures.Playfield
         {
             get
             {
-
-
                 return new System.Windows.Size(NumColumns * Tile.SIZE, NumRows * Tile.SIZE);
             }
         }

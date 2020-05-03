@@ -71,12 +71,12 @@ namespace I_Robot
             {
                 p.X = 0;
                 for (int c = 0; c < num_cols; c++, p.X += Tile.SIZE)
-                    BuildTile3D(chunks, r, c, ref p);
+                    BuildTile3D(chunks, r, c, p);
                 p.Z += Tile.SIZE;
             }
         }
 
-        void BuildTile3D(ChunkList chunks, int row, int col, ref Point3D p)
+        void BuildTile3D(ChunkList chunks, int row, int col, Point3D p)
         {
             Tile tile = chunks.GetTileAt(row, col);
 
@@ -101,12 +101,12 @@ namespace I_Robot
                 case Tile.TYPE.ILLEGAL_15: return;
             }
 
-            AddFlatTile(p, tile.Height, color);
+            AddFlatTile(chunks, row, col, p, tile);
         }
 
-        void AddFlatTile(Point3D p, float y, int color_index)
+        void AddFlatTile(ChunkList chunks, int row, int col, Point3D p, Tile tile)
         {
-            p.Y = y;
+            p.Y = tile.Height;
             double bottom = Tile.SIZE * 2;
 
             Point3D p2 = p + new Vector3D(Tile.SIZE, 0, 0);
@@ -118,6 +118,7 @@ namespace I_Robot
             Point3D p8 = p5 + new Vector3D(0, 0, Tile.SIZE);
 
             // limit "darkest" color to be base color + intensity 1
+            int color_index = tile.ColorIndex;
             int min_color = (color_index & 0xF8) + 1;
 
             // top
@@ -125,17 +126,51 @@ namespace I_Robot
             AddRectangle(p, p2, p3, p4, m);
 
             // left/right
-//            m = Palette.DiffuseMaterial[Math.Max(color_index - 2, min_color)];
-            AddRectangle(p, p4, p8, p5, m);
-            AddRectangle(p2, p6, p7, p3, m);
+            //            m = Palette.DiffuseMaterial[Math.Max(color_index - 2, min_color)];
+
+            bool left = true;
+            if (col > 0)
+            {
+                Tile t = chunks.GetTileAt(row, col - 1);
+                if (t.IsVisible && !t.IsSloped && t.Height <= p.Y)
+                    left = false;
+            }
+            if (left)
+                AddRectangle(p, p4, p8, p5, m);
+
+            bool right = true;
+            if (col < 15)
+            {
+                Tile t = chunks.GetTileAt(row, col + 1);
+                if (t.IsVisible && !t.IsSloped && t.Height <= p.Y)
+                    right = false;
+            }
+            if (right)
+                AddRectangle(p2, p6, p7, p3, m);
 
             // front / back
-//            m = Palette.DiffuseMaterial[Math.Max(color_index - 4, min_color)];
-            AddRectangle(p, p5, p6, p2, m);
-            AddRectangle(p3, p4, p8, p7, m);
+            //            m = Palette.DiffuseMaterial[Math.Max(color_index - 4, min_color)];
+            bool front = true;
+            if (row < chunks.NumRows-1)
+            {
+                Tile t = chunks.GetTileAt(row + 1, col);
+                if (t.IsVisible && !t.IsSloped && t.Height <= p.Y)
+                    front = false;
+            }
+            if (front)
+                AddRectangle(p3, p4, p8, p7, m);
+            bool back = true;
+            if (row > 0)
+            {
+                Tile t = chunks.GetTileAt(row-1, col);
+                if (t.IsVisible && !t.IsSloped && t.Height <= p.Y)
+                    back = false;
+            }
+            if (back)
+                AddRectangle(p, p5, p6, p2, m);
 
             // bottom
-//            m = Palette.DiffuseMaterial[Math.Max(color_index - 6, min_color)];
+            //m = Palette.DiffuseMaterial[Math.Max(color_index - 6, min_color)];
             AddRectangle(p5, p8, p7, p6, m);
         }
 
