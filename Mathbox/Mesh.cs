@@ -807,11 +807,20 @@ namespace I_Robot.Mathbox
                     System.Diagnostics.Debug.Assert(mSurfaces[n] != mSurfaces[m]);
 #endif
 
+            NumSurfaces = mSurfaces.Count;
+
             // pre-sort the surfaces to save time
             List<Surface> shaded = new List<Surface>();
             List<Surface> unshaded = new List<Surface>();
             foreach (Surface surface in mSurfaces)
             {
+                switch (surface.Type)
+                {
+                    case Surface.TYPE.Dot: NumDots += surface.Points.Count; break;
+                    case Surface.TYPE.Vector: NumVectors += surface.Points.Count - 1; break;
+                    case Surface.TYPE.Polygon: NumPolygons++; break;
+                }
+
                 if (surface.IsShaded && surface.Type == Surface.TYPE.Polygon)
                     shaded.Add(surface);
                 else
@@ -820,6 +829,12 @@ namespace I_Robot.Mathbox
             ShadedSurfaces = shaded;
             UnshadedSurfaces = unshaded;
         }
+
+        public int NumSurfaces { get; private set; }
+        public int NumPolygons { get; private set; }
+        public int NumVectors { get; private set; }
+        public int NumDots { get; private set; }
+
 
         public int Count => ((IReadOnlyList<Surface>)mSurfaces).Count;
         public Surface this[int index] => ((IReadOnlyList<Surface>)mSurfaces)[index];
@@ -857,6 +872,7 @@ namespace I_Robot.Mathbox
              (Int16)(ROM[address++]),
              (Int16)(ROM[address++]));
         }
+
 
         public override string ToString()
         {

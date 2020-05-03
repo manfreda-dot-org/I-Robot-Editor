@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:I_Robot"
         mc:Ignorable="d"
-        Title="Mesh Viewer" Height="450" Width="800" WindowStyle="ToolWindow" ShowInTaskbar="False" Topmost="True" MouseWheel="Window_MouseWheel" MouseDown="Window_MouseDown" MouseUp="Window_MouseUp" MouseMove="Window_MouseMove">
+        Title="Mesh Viewer" Height="450" Width="800" ShowInTaskbar="False" Topmost="True" MouseWheel="Window_MouseWheel" MouseDown="Window_MouseDown" MouseUp="Window_MouseUp" MouseMove="Window_MouseMove" FontSize="14" Padding="0" UseLayoutRounding="False">
     <Window.Background>
         <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
             <GradientStop Color="Black" Offset="1"/>
@@ -15,7 +15,10 @@
     </Window.Background>
     <Grid>
         <DockPanel LastChildFill="True" ScrollViewer.VerticalScrollBarVisibility="Auto">
-            <ListBox Name="lbModels" ScrollViewer.VerticalScrollBarVisibility="Auto" SelectionChanged="lbModels_SelectionChanged" Width="150" />
+            <StatusBar Height="40" DockPanel.Dock="Bottom" Background="#FF0085D6" Foreground="White" FontSize="14">
+                <TextBlock Name="StatusText" TextWrapping="Wrap" Text="StatusText"/>
+            </StatusBar>
+            <ListBox Name="lbModels" ScrollViewer.VerticalScrollBarVisibility="Auto" SelectionChanged="lbModels_SelectionChanged" Width="100" FontSize="14" />
             <Viewport3D Name="Viewport" DockPanel.Dock="Right" ClipToBounds="True" >
                 <Viewport3D.Camera>
                     <PerspectiveCamera x:Name="mCamera" Position="0,0,-1" LookDirection="0,0,1"

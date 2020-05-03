@@ -78,15 +78,15 @@ namespace I_Robot.GameStructures
                 int address = Rom.Word(Rom206.LEVEL_TABLE_ADDRESS + n * 2);
 
                 // create a level at this address
-                Level level = new Level($"Level {n + 1} @ {address.ToString("X4")}", n + 1, Rom, address);
+                Level level = new Level($"Level {n + 1} @ 0x{address.ToString("X4")}", n + 1, Rom, address);
 
                 // and add to our collection
                 List.Add(level);
             }
 
             // add the unused levels from the rom
-            List.Add(new Level($"Unused playfield @ 5323", -1, Rom, 0x56C2, 0x5323));
-            List.Add(new Level($"Unused playfield @ 5378", -1, Rom, 0x56C2, 0x5378));
+            List.Add(new Level($"Unused playfield @ 0x5323", -1, Rom, 0x56C2, 0x5323));
+            List.Add(new Level($"Unused playfield @ 0x5378", -1, Rom, 0x56C2, 0x5378));
         }
 
         public Level this[int index] => ((IReadOnlyList<Level>)List)[index];

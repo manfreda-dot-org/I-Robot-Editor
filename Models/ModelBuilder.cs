@@ -214,7 +214,7 @@ namespace I_Robot
             mesh.Normals.Add(normal);
 
             GeometryModel3D model = new GeometryModel3D(mesh, material);
-//            model.BackMaterial = material;
+            model.BackMaterial = material;
             Group.Children.Add(model);
         }
 
@@ -240,7 +240,7 @@ namespace I_Robot
             } while (i < points.Count);
 
             GeometryModel3D model = new GeometryModel3D(mesh, material);
-//            model.BackMaterial = material;
+            model.BackMaterial = material;
             Group.Children.Add(model);
         }
 
@@ -500,7 +500,7 @@ namespace I_Robot
             }
 
             GeometryModel3D model = new GeometryModel3D(mesh, material);
-            //            model.BackMaterial = material;
+            model.BackMaterial = material;
             Group.Children.Add(model);
         }
     }

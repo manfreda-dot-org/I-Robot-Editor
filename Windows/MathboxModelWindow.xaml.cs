@@ -63,6 +63,8 @@ namespace I_Robot
 
                     lbModels.ScrollIntoView(value);
                     lbModels.SelectedItem = value;
+
+                    StatusText.Text = $"Mesh: @ 0x{value.Model.Address.ToString("X4")}    Vertex table: @ 0x{value.Model.VertexTable.ToString("X4")}    Surfaces: {value.Model.NumSurfaces}    Polygons: {value.Model.NumPolygons}    Vectors: {value.Model.NumVectors}    Dots: {value.Model.NumDots}";
                 }
             }
         }
